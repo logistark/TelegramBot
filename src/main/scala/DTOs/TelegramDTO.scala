@@ -1,5 +1,6 @@
-import TelegramDTO.Four
-import shapeless.Sized
+package DTOs
+
+import DTOs.TelegramDTO.Four
 
 object TelegramDTO {
   type Four = shapeless.nat._4
