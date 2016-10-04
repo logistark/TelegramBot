@@ -1,10 +1,7 @@
-package DTOs
-
-import DTOs.TelegramDTO.Four
+package ADTs
 
 object TelegramDTO {
-  type Four = shapeless.nat._4
-}
+
 
 case class User(id: Int, first_name: String, last_name: Option[String], username: Option[String])
 case class Chat(id: Int, _type: String, title: Option[String], username: Option[String], first_name: Option[String], last_name: Option[String])
@@ -17,7 +14,7 @@ case class Voice(file_id: String, duration: Int, mime_type: Option[String], file
 case class Contact(phone_number: String, first_name: String, last_name: Option[String], user_id: Int)
 case class Location(longitude: Float, latitude: Float)
 case class Venue(location: Location, title: String, address: String, foursquare_id: Option[String])
-case class UserProfilePhotos(total_count: Int, photos: Seq[Sized[Seq[String], Four]])
+case class UserProfilePhotos(total_count: Int, photos: Seq[Seq[String]])
 case class File(file_id: String, file_size: Option[Int], file_path: Option[String])
 case class Message(message_id: Int,
                    from: Option[User],
@@ -54,11 +51,8 @@ case class ChosenInlineResult(inline_query_id: String, results: List[InlineQuery
 case class Update(update_id: Int, message: Option[Message], inline_query: Option[InlineQuery], chosen_inline_result: Option[ChosenInlineResult], callbackQuery: Option[CallbackQuery])
 case class CallbackQuery()
 case class InputFile()
+  case class SetWebhook(url: Option[String], certificate: Option[InputFile])
 
-trait Command
-case object GetMe extends Command
-case class GetUpdates(offset: Option[Int], limit: Option[Int], timeout: Option[Int]) extends Command
-
-case class SetWebhook(url: Option[String], certificate: Option[InputFile])
+}
 
 
