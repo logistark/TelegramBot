@@ -2,16 +2,13 @@ name := "TelegramBot"
 
 version := "1.0"
 
-scalaVersion := "2.11.8"
-val circeVersion = "0.5.1"
-val http4sVersion = "0.14.8a"
+scalaVersion := "2.12.1"
 
-resolvers ++= Seq(
-  Resolver.sonatypeRepo("releases"),
-  Resolver.sonatypeRepo("snapshots")
-)
 
 libraryDependencies ++= Seq(
-  "org.typelevel" %% "cats" % "0.7.2",
+  "de.heikoseeberger" %% "akka-http-circe" % "1.11.0",
+  "com.typesafe.akka" %% "akka-http" % "10.0.2",
+  "org.typelevel" %% "cats" % "0.9.0",
+  "org.scalatest" %% "scalatest" % "3.0.1" % "test"
 )
 
