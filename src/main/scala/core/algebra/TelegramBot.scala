@@ -1,7 +1,9 @@
 package core.algebra
 
-import ADTs.TelegramDTO.{Message, ReplyMarkup, Update, User}
+import ADTs.TelegramDTO._
 import cats.free._
+import com.sun.xml.internal.ws.message.PayloadElementSniffer
+
 
 
 /**
@@ -10,22 +12,17 @@ import cats.free._
 
 
 sealed trait TelegramBotOp[A]
-final case class GetMe() extends TelegramBotOp[Option[User]]
-final case class GetUpdates(offset: Option[Int], limit: Option[Int], timeout: Option[Int]) extends TelegramBotOp[Seq[Update]]
-final case class SendMessage(id: Int,
-                             text: String,
-                             parse_mode: Option[String],
-                             disable_web_page_preview: Option[Boolean],
-                             disable_notification: Option[Boolean],
-                             reply_to_message_id: Option[Int],
-                             reply_markup: ReplyMarkup ) extends TelegramBotOp[Message]
+final case class GetMeOp() extends TelegramBotOp[Option[User]]
+final case class GetUpdatesOp( getUpdatesOptions: GetUpdates) extends TelegramBotOp[Seq[Update]]
+final case class SendMessageOp(messageToSend: SendMessage ) extends TelegramBotOp[Message]
+object TelegramBotOps {
+  import cats.free.Free._
+  type TelegramBotProgram[A] = Free[TelegramBotOp, A]
 
-class TelegramBotOps[F[_]](implicit I: Inject[TelegramBotOp, F]) {
-  def getMeI(): Free[F, Option[User]] =
-    Free.inject[TelegramBotOp, F](GetMe())
+  def getMe(): TelegramBotProgram[Option[User]] = liftF(GetMeOp())
 
-  def getUpdatesI(offset: Option[Int], limit: Option[Int], runtime: Option[Int]) ={
-    Free.inject[TelegramBotOp, F](GetUpdates(offset, limit, runtime))
+  def getUpdates(offset: Option[Int], limit: Option[Int], runtime: Option[Int]): TelegramBotProgram[Seq[Update]] = {
+    liftF(GetUpdatesOp(GetUpdates(offset, limit, runtime)))
   }
 
   def sendMessage(id: Int,
@@ -34,10 +31,11 @@ class TelegramBotOps[F[_]](implicit I: Inject[TelegramBotOp, F]) {
                   disable_web_page_preview: Option[Boolean],
                   disable_notification: Option[Boolean],
                   reply_to_message_id: Option[Int],
-                  reply_markup: ReplyMarkup) = {
-    Free.inject[TelegramBotOp, F](SendMessage(id, text, parse_mode, disable_web_page_preview, disable_notification, reply_to_message_id, reply_markup))  }
+                  reply_markup: ReplyMarkup): TelegramBotProgram[Message] = {
+    liftF(SendMessageOp(SendMessage(id, text, parse_mode, disable_web_page_preview, disable_notification, reply_to_message_id, reply_markup)))  }
 }
 
-object TelegramBotOps {
-  implicit def instance[F[_]](implicit I: Inject[TelegramBotOp, F]): TelegramBotOps[F] = new TelegramBotOps[F]
-}
+
+
+
+
